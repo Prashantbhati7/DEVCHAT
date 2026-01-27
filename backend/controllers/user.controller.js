@@ -21,7 +21,7 @@ export const createUserController = async (req, res) => {
         httpOnly:true,
         secure:process.env.NODE_ENV !== "development",
     }
-        res.status(201).cookie('token', token,options).json({ user, token });
+        res.status(201).json({ user, token });
     } catch (error) {
         res.status(400).send(error.message);
     }
@@ -61,7 +61,7 @@ export const loginController = async (req, res) => {
         }
         delete user._doc.password; // to not send the password in the frontend
 
-        res.status(200).cookie('token', token,options).json({ user, token });
+        res.status(200).json({ user, token });
 
 
     } catch (err) {
@@ -87,7 +87,7 @@ export const logoutController = async (req, res) => {
 
         redisClient.set(token, 'logout', 'EX', 60 * 60 * 24);
 
-        res.status(200).clearCookie('token').json({
+        res.status(200).json({
             message: 'Logged out successfully'
         });
 

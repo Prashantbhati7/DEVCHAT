@@ -37,7 +37,7 @@ export const getAllProjectByUserId = async ({ userId }) => {
     const allUserProjects = await projectModel.find({
         users: userId
     })
-
+    console.log("services return ", allUserProjects);
     return allUserProjects
 }
 
@@ -73,7 +73,7 @@ export const addUsersToProject = async ({ projectId, users, userId }) => {
         users: userId
     })
 
-    console.log(project)
+    //console.log(project)
 
     if (!project) {
         throw new Error("User not belong to this project")
