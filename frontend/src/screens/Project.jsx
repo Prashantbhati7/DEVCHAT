@@ -49,7 +49,7 @@ const Project = () => {
 
     const [ runProcess, setRunProcess ] = useState(null)
 
-    const handleUserClick = (id) => {
+    const handleUserClick = (id) => {             // user selection for adding in group 
         setSelectedUserId(prevSelectedUserId => {
             const newSelectedUserId = new Set(prevSelectedUserId);
             if (newSelectedUserId.has(id)) {
@@ -64,8 +64,8 @@ const Project = () => {
 
     }
 
-
-    function addCollaborators() {
+ 
+    function addCollaborators() {             // adding the selected users into the room 
 
         axios.put("/projects/add-user", {
             projectId: location.state.project._id,
@@ -82,7 +82,7 @@ const Project = () => {
 
     const send = () => {
 
-        sendMessage('project-message', {
+        sendMessage('project-message', {      // to emit message 
             message,
             sender: user
         })
@@ -109,22 +109,34 @@ const Project = () => {
                 />
             </div>)
     }
+    function saveFileTree(ft) {
+        axios.put('/projects/update-file-tree', {
+            projectId: project._id,
+            fileTree: ft
+        }).then(res => {
+            console.log(res.data)
+        }).catch(err => {
+            console.log(err)
+        })
+    }
 
     useEffect(() => {
 
         initializeSocket(project._id)
 
         if (!webContainer) {
+            console.log("container not started")
             getWebContainer().then(container => {
+                console.log("container started",container);
                 setWebContainer(container)
-                console.log("container started")
+                //console.log("container started")
             })
         }
 
 
         receiveMessage('project-message', data => {
 
-            console.log(data)
+           // console.log(data)
             
             if (data.sender._id == 'ai') {
 
@@ -134,9 +146,10 @@ const Project = () => {
                 console.log("ai response is ",message);
 
                 webContainer?.mount(message.fileTree)
-
+                console.log("mounted on container")
                 if (message.fileTree) {
                     setFileTree(message.fileTree || {})
+                    saveFileTree(message.fileTree || {})
                 }
                 setMessages(prevMessages => [ ...prevMessages, data ]) // Update messages state
             } else {
@@ -174,16 +187,16 @@ const Project = () => {
     }, [])
 
     
-    function saveFileTree(ft) {
-        axios.put('/projects/update-file-tree', {
-            projectId: project._id,
-            fileTree: ft
-        }).then(res => {
-            console.log(res.data)
-        }).catch(err => {
-            console.log(err)
-        })
-    }
+    // function saveFileTree(ft) {
+    //     axios.put('/projects/update-file-tree', {
+    //         projectId: project._id,
+    //         fileTree: ft
+    //     }).then(res => {
+    //         console.log(res.data)
+    //     }).catch(err => {
+    //         console.log(err)
+    //     })
+    // }
 
 
     // Removed appendIncomingMessage and appendOutgoingMessage functions
@@ -266,7 +279,7 @@ const Project = () => {
 
                 <div className="explorer h-full max-w-64 min-w-52 bg-slate-200">
                     <div className="file-tree w-full">
-                        {console.log("file treee is ",fileTree)}
+                        {/* {console.log("file treee is ",fileTree)} */}
                         {
                             
                             Object.keys(fileTree).map((file, index) => (
@@ -278,7 +291,7 @@ const Project = () => {
                                     }}
                                     className="tree-element cursor-pointer p-2 px-4 flex items-center gap-2 bg-slate-300 w-full">
                                     <p
-                                        className='font-semibold text-black text-lg'
+                                        className='font-semibold line-clamp-2 overflow-hidden text-black text-lg'
                                     >{file}</p>
                                 </button>))
 
@@ -311,10 +324,12 @@ const Project = () => {
                             <button
                                 onClick={async () => {
                                     await webContainer.mount(fileTree)
-
+                                    console.log("mounted on container",webContainer)
+                            
 
                                     const installProcess = await webContainer.spawn("npm", [ "install" ])
 
+                                    console.log("process initialized npm intall ",installProcess)
 
 
                                     installProcess.output.pipeTo(new WritableStream({
@@ -322,12 +337,17 @@ const Project = () => {
                                             console.log(chunk)
                                         }
                                     }))
+                                    const installExitCode = await installProcess.exit;
+                                    if (installExitCode !== 0) {
+                                    throw new Error("npm install failed");
+                                    }
 
                                     if (runProcess) {
                                         runProcess.kill()
                                     }
 
                                     let tempRunProcess = await webContainer.spawn("npm", [ "start" ]);
+                                    console.log("process initialized npm start ",tempRunProcess)
 
                                     tempRunProcess.output.pipeTo(new WritableStream({
                                         write(chunk) {
@@ -396,6 +416,7 @@ const Project = () => {
                                 onChange={(e) => setIframeUrl(e.target.value)}
                                 value={iframeUrl} className="w-full p-2 px-4 bg-slate-200" />
                         </div>
+                        {console.log("iframe url is ",iframeUrl)}
                         <iframe src={iframeUrl} className="w-full h-full"></iframe>
                     </div>)
                 }
