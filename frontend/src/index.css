@@ -13,10 +13,21 @@ body {
   height: 100%;
   width: 100%;
 }
+#root{
+  height: 100%;
+  width: 100%;
+}
 
 .message-box{
   scroll-behavior: smooth;
 }
 .message-box::-webkit-scrollbar{
   display: none;
+}
+.projects{
+  
+  background-repeat: no-repeat;
+  background-size: cover;
+  object-fit: cover;
+  background-position: center;
 }

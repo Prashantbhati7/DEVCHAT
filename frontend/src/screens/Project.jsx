@@ -37,7 +37,7 @@ const Project = () => {
     const { user } = useContext(UserContext)
     const messageBox = React.createRef()
 
-    const [ users, setUsers ] = useState([])
+    const [ users, setUsers ] = useState([])     
     const [ messages, setMessages ] = useState([]) // New state variable for messages
     const [ fileTree, setFileTree ] = useState({})
 
@@ -66,14 +66,14 @@ const Project = () => {
 
  
     function addCollaborators() {             // adding the selected users into the room 
-
+        if (isSidePanelOpen) {
+            setIsSidePanelOpen(false)
+        }
         axios.put("/projects/add-user", {
             projectId: location.state.project._id,
             users: Array.from(selectedUserId)
         },{withCredentials:true}).then(res => {
-            console.log(res.data)
             setIsModalOpen(false)
-
         }).catch(err => {
             console.log(err)
         })
@@ -159,18 +159,17 @@ const Project = () => {
             }
         })
 
-        axios.get('/users/all',{withCredentials:true}).then(res => {
-
-            setUsers(res.data.users)
-
-        }).catch(err => {
-
-            console.log(err)
-
-        })
-
     }, [])
 
+    const fetchUsers = async () => {
+        try {
+            console.log("fetching users")
+            const response = await axios.get('/users/all',{withCredentials:true});
+            setUsers(response.data.users);
+        } catch (error) {
+            console.error(error);
+        }
+    }
     useEffect(() => {
         try{
         axios.get(`/projects/get-project/${location.state.project._id}`,{withCredentials:true}).then(res => {
@@ -178,13 +177,14 @@ const Project = () => {
             //console.log(res.data.project)
             
             setProject(res.data.project)
+            fetchUsers();
             setFileTree(res.data.project.fileTree || {})
         })
         }catch(err){
             console.log(err)
             
         }
-    }, [])
+    },[isSidePanelOpen,setIsSidePanelOpen])
 
     
     // function saveFileTree(ft) {
@@ -206,7 +206,8 @@ const Project = () => {
     }
 
     return (
-        <main className='h-screen w-screen flex'>
+        <main className=' w-screen flex'>
+            
             <section className="left relative flex flex-col h-screen min-w-96 bg-slate-300">
                 <header className='flex justify-between items-center p-2 px-4 w-full bg-slate-100 absolute z-10 top-0'>
                     <button className='flex gap-2' onClick={() => setIsModalOpen(true)}>

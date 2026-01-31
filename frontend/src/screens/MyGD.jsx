@@ -17,9 +17,11 @@ const MyGD = () => {
 
         axios.post('/projects/create', {
             name: projectName,
-        })
+        },{withCredentials:true})
             .then((res) => {
                 console.log(res)
+                setProject([...project, res.data])
+                setProjectName(null)
                 setIsModalOpen(false)
             })
             .catch((error) => {
@@ -39,11 +41,11 @@ const MyGD = () => {
     }, [user])
 
   return (
-     <main className='p-4'>
+     <main className=' pt-20 projects bg-gradient-to-l  from-black text-[#0F9B0F] to-slate-800 flex-1 p-4'>
             <div className="projects flex flex-wrap gap-3">
                 <button
                     onClick={() => setIsModalOpen(true)}
-                    className="project p-4 border border-slate-300 rounded-md">
+                    className="project p-4 border-green-800 border-2 rounded-md">
                     New Project
                     <i className="ri-link ml-2"></i>
                 </button>
