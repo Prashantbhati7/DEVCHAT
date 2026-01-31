@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from '../config/axios'
 import { UserContext } from '../context/user.context'
@@ -33,12 +33,26 @@ const Login = () => {
             seterror(err.response.data.errors);
         })
     }
+    const hideerror = async()=>{
+        const promise = new Promise((resolve,reject)=>{
+            setTimeout(()=>{
+                resolve();
+            },2000)
+        })
+        await promise;
+        seterror(null);
+    }
+    useEffect(()=>{
+        if (error){
+            hideerror();
+        }
+    },[error])
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-900">
-            <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
+        <div className="flex flex-1 items-center justify-center bg-gradient-to-r from-black to-gray-700">
+            <div className="bg-gradient-to-b from-black to-gray-700 p-5 rounded-3xl shadow-lg w-full max-w-md">
                 <h2 className="text-2xl font-bold text-white mb-6">Login</h2>
-                {error && <p className="text-red-500 mt-2 text-center w-full p-3 rounded bg-gray-700 text-white focus:outline-none">{error}</p>}
+                {error && <p className="text-red-500 font-semibold mt-2 text-center w-full p-3 focus:outline-none">{error}</p>}
                 <form
                     onSubmit={submitHandler}
                 >
@@ -49,7 +63,7 @@ const Login = () => {
                             onChange={(e) => setEmail(e.target.value)}
                             type="email"
                             id="email"
-                            className="w-full p-3 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full p-3 rounded-2xl bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="Enter your email"
                         />
                     </div>
@@ -59,13 +73,13 @@ const Login = () => {
                             onChange={(e) => setPassword(e.target.value)}
                             type="password"
                             id="password"
-                            className="w-full p-3 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full p-3 rounded-2xl bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="Enter your password"
                         />
                     </div>
                     <button
                         type="submit"
-                        className="w-full p-3 rounded bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full p-3 rounded-2xl bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                         Login
                     </button>
