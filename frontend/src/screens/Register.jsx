@@ -3,11 +3,12 @@ import { Link, useNavigate } from 'react-router-dom'
 import { UserContext } from '../context/user.context'
 import axios from '../config/axios'
 
+
 const Register = () => {
 
     const [ email, setEmail ] = useState('')
     const [ password, setPassword ] = useState('')
-
+    const [error,seterror] = useState(null);
     const { setUser } = useContext(UserContext)
 
     const navigate = useNavigate()
@@ -20,13 +21,16 @@ const Register = () => {
         axios.post('/users/register', {
             email,
             password
+        },{
+            withCredentials: true
         }).then((res) => {
             console.log(res.data)
-            localStorage.setItem('token', res.data.token)
+            //localStorage.setItem('token', res.data.token)
             setUser(res.data.user)
             navigate('/')
         }).catch((err) => {
             console.log(err.response.data)
+            seterror(err.response.data.errors);
         })
     }
 
@@ -35,6 +39,7 @@ const Register = () => {
         <div className="min-h-screen flex items-center justify-center bg-gray-900">
             <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
                 <h2 className="text-2xl font-bold text-white mb-6">Register</h2>
+                {error && <p className="text-red-500 mt-2 text-center w-full p-3 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">{error}</p>}
                 <form
                     onSubmit={submitHandler}
                 >

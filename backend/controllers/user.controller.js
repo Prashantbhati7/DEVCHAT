@@ -18,10 +18,10 @@ export const createUserController = async (req, res) => {
 
         delete user._doc.password;
         const options = {
-        httpOnly:true,
-        secure:process.env.NODE_ENV !== "development",
-    }
-        res.status(201).json({ user, token });
+            httpOnly: true,
+            secure : process.env.NODE_ENV !== "development",
+        }
+        res.status(201).cookie('token', token, options).json({ user, token });
     } catch (error) {
         res.status(400).send(error.message);
     }
@@ -59,9 +59,10 @@ export const loginController = async (req, res) => {
             httpOnly:true,
             secure:process.env.NODE_ENV !== "development",
         }
+
         delete user._doc.password; // to not send the password in the frontend
 
-        res.status(200).json({ user, token });
+        res.status(200).cookie('token', token, options).json({ user, token });
 
 
     } catch (err) {
@@ -87,7 +88,7 @@ export const logoutController = async (req, res) => {
 
         redisClient.set(token, 'logout', 'EX', 60 * 60 * 24);
 
-        res.status(200).json({
+        res.status(200).clearCookie('token').json({
             message: 'Logged out successfully'
         });
 
@@ -117,5 +118,20 @@ export const getAllUsersController = async (req, res) => {
 
         res.status(400).json({ error: err.message })
 
+    }
+}
+
+
+export const getCurrLoggedInUser = async (req, res) => {
+    try {
+        const userid = req.user._id;
+        const user = await userModel.findById(userid);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        return res.status(200).json({ user });
+    } catch (err) {
+        console.log(err);
+        res.status(400).send(err.message);
     }
 }
