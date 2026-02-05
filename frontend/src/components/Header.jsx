@@ -19,7 +19,7 @@ const Header = () => {
     return (
         <header className="bg-gray-800  fixed top-0 w-full text-white p-4 flex justify-between items-center">
             <div className="text-xl text-white font-bold">
-                <Link to="/">DEVCHAT</Link>
+                <Link to="/"><span className='text-red-600'>DEV</span>CHAT</Link>
             </div>
             <nav>
                 {user ? (
