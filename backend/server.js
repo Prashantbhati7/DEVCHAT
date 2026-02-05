@@ -12,7 +12,7 @@ const port = process.env.PORT || 3000;
 
 
 const server = http.createServer(app);
-console.log("server created",server);
+//console.log("server created",server);
 const io = new Server(server, {
     cors: {
         origin: '*'
@@ -23,7 +23,7 @@ const io = new Server(server, {
 io.use(async (socket, next) => {
 
     try {
-        console.log("socket object is ",socket);
+       // console.log("socket object is ",socket);
         const token = socket.handshake.auth?.token || socket.handshake.headers.authorization?.split(' ')[ 1 ];
         const projectId = socket.handshake.query.projectId;
 
