@@ -20,6 +20,7 @@ export const createUserController = async (req, res) => {
         const options = {
             httpOnly: true,
             secure : process.env.NODE_ENV !== "development",
+            sameSite: "none",
         }
         res.status(201).cookie('token', token, options).json({ user, token });
     } catch (error) {
@@ -58,6 +59,7 @@ export const loginController = async (req, res) => {
          const options = {
             httpOnly:true,
             secure:process.env.NODE_ENV !== "development",
+            sameSite: "none",
         }
 
         delete user._doc.password; // to not send the password in the frontend
