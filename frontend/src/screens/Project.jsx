@@ -125,7 +125,7 @@ const Project = () => {
         initializeSocket(project._id)
 
         if (!webContainer) {
-            console.log("container not started")
+            //console.log("container not started")
             getWebContainer().then(container => {
                 console.log("container started",container);
                 setWebContainer(container)
