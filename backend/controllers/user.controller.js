@@ -15,7 +15,7 @@ export const createUserController = async (req, res) => {
         const user = await userService.createUser(req.body);
 
         const token = await user.generateJWT();
-
+        console.log("token is ",token);
         delete user._doc.password;
         const options = {
             httpOnly: true,
@@ -61,7 +61,7 @@ export const loginController = async (req, res) => {
             secure:process.env.NODE_ENV !== "development",
             sameSite: "none",
         }
-
+        console.log("token is ",token);
         delete user._doc.password; // to not send the password in the frontend
 
         res.status(200).cookie('token', token, options).json({ user, token });

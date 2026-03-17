@@ -10,7 +10,7 @@ const Register = () => {
     const [ password, setPassword ] = useState('')
     const [error,seterror] = useState(null);
     const { setUser } = useContext(UserContext)
-
+    const [scale,setScale] = useState(false);
     const navigate = useNavigate()
 
 
@@ -49,44 +49,51 @@ const Register = () => {
     },[error])
 
     return (
-        <div className="flex-1 flex items-center justify-center bg-gradient-to-r from-black to-gray-700">
-            <div className="bg-gradient-to-b from-black to-gray-700 p-8 rounded-2xl shadow-lg w-full max-w-md">
-                <h2 className="text-2xl font-bold text-white mb-6">Register</h2>
-                {error && <p className="text-red-500 mt-2 text-center w-full p-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500">{error}</p>}
-                <form
-                    onSubmit={submitHandler}
-                >
-                    <div className="mb-4">
-                        <label className="block text-gray-400 mb-2" htmlFor="email">Email</label>
+          <div className='min-h-screen h-[90vh] bg-black'>
+         <div className={`relative top-1/2 translate-y-[-50%] flex flex-col justify-center  mx-auto ${scale?'w-[90%] h-[90%]':'w-[50%] h-[50%]'} bg-[#050c05] border border-green-900/40 rounded-2xl overflow-hidden shadow-2xl shadow-green-900/20 group`}>
+                        <div className="absolute border-b-gray-400 border-b top-0 w-full h-8 bg-black   border-green-900/30 flex items-center px-4 gap-2">
+                           <button onClick={()=> navigate('/')} className="w-3 h-3 rounded-full bg-green-500/20 group-hover:bg-red-500/80 transition-colors"></button>
+                           <div className="w-3 h-3 rounded-full bg-green-500/20 group-hover:bg-yellow-500/80 transition-colors"></div>
+                           <button onClick={()=> setScale(!scale)} className="w-3 h-3 rounded-full bg-green-500/20 group-hover:bg-green-500/80 transition-colors"></button>
+                           <div className="ml-4 text-xs font-mono text-green-700 group-hover:text-green-500 transition-colors">terminal ~ Register </div>
+                        </div>
+                      
+               <form className='px-4 ' onSubmit={submitHandler}>
+                    <div className={`mb-4 w-full px-4 flex flex-col  justify-center ${scale && 'scale-y-110 pb-10 '} `}>
+                         <div className="text-red-500 font-semibold mt-2 text-center w-full p-3 h-11 focus:outline-none">{error ? "Error ~ User already exists " : ""}</div>
+                        <label className="block text-white font-mono font-bold w-full  mb-2" htmlFor="email">~Email</label>
                         <input
+
                             onChange={(e) => setEmail(e.target.value)}
                             type="email"
                             id="email"
-                            className="w-full p-3 rounded-2xl bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className=" w-full mx-auto p-3 bg-black  font-mono focus:border-none focus:outline-none acitve:ring-green-950 placeholder:text-green-700 placeholder:font-mono text-green-700"
                             placeholder="Enter your email"
                         />
                     </div>
-                    <div className="mb-6">
-                        <label className="block text-gray-400 mb-2" htmlFor="password">Password</label>
+                    <div className={`mb-6 px-4  ${scale && 'scale-y-110 pb-10'} `}>
+                        <label className="block text-white font-mono font-bold  mb-2" htmlFor="password">~Password</label>
                         <input
-                            onChange={(e) => setPassword(e.target.value)} 
+                            onChange={(e) => setPassword(e.target.value)}
                             type="password"
                             id="password"
-                            className="w-full p-3 rounded-2xl bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full p-3 rounded-2xl placeholder:text-green-700 font-mono text-green-700 bg-black   focus:outline-none "
                             placeholder="Enter your password"
                         />
                     </div>
+                    <div className='w-full flex justify-center'>
                     <button
                         type="submit"
-                        className="w-full p-3 rounded-2xl bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="p-3 px-10 rounded-full  bg-green-500 text-black font-bold max-w-3xl mx-auto overflow-hidden shadow-[0_0_30px_rgba(34,197,94,0.3)] hover:shadow-[0_0_50px_rgba(34,197,94,0.5)] transition-all flex items-center justify-center gap-3"
                     >
-                        Register
+                       Register
                     </button>
-                </form>
-                <p className="text-gray-400 mt-4">
-                    Already have an account? <Link to="/login" className="text-blue-500 hover:underline">Login</Link>
+                    </div>
+                     <p className="text-gray-400  px-4 mt-4">
+                    Already have an account? <Link to="/login" className="text-green-500 hover:underline">Login</Link>
                 </p>
-            </div>
+                </form>
+        </div>
         </div>
     )
 }

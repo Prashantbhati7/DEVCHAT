@@ -89,7 +89,7 @@ export const addUsersToProject = async ({ projectId, users, userId }) => {
         }
     }, {
         new: true
-    })
+    }).populate('users')
 
     return updatedProject
 
