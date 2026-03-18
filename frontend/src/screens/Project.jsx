@@ -70,7 +70,9 @@ const Project = () => {
         axios.put("/projects/add-user", {
             projectId: location.state.project._id,
             users: Array.from(selectedUserId)
-        },{withCredentials:true}).then(res => {
+        },{withCredentials:true,headers:{
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+        }}).then(res => {
             console.log(res.data)
             setIsModalOpen(false)
             setProject(res.data.project)
@@ -114,7 +116,9 @@ const Project = () => {
         axios.put('/projects/update-file-tree', {
             projectId: project._id,
             fileTree: ft
-        },{withCredentials:true}).then(res => {
+        },{withCredentials:true,headers:{
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+        }}).then(res => {
             console.log(res.data)
         }).catch(err => {
             console.log(err)
@@ -160,7 +164,9 @@ const Project = () => {
             }
         })
 
-        axios.get('/users/all',{withCredentials:true}).then(res => {
+        axios.get('/users/all',{withCredentials:true,headers:{
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+        }}).then(res => {
             console.log("got all users : ",users);
             setUsers(res.data.users)
 
@@ -174,7 +180,9 @@ const Project = () => {
 
     useEffect(() => {
         try{
-        axios.get(`/projects/get-project/${location.state.project._id}`,{withCredentials:true}).then(res => {
+        axios.get(`/projects/get-project/${location.state.project._id}`,{withCredentials:true,headers:{
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+        }}).then(res => {
 
             //console.log(res.data.project)
             

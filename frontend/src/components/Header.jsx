@@ -5,19 +5,29 @@ import { UserContext } from '../context/user.context.jsx';
 import axiosInstance from '../config/axios.js';
 
 const Header = () => {
-    const { user, setUser,loading} = useContext(UserContext);
+    const { user, setUser,loading,setLoading} = useContext(UserContext);
     const navigate = useNavigate();
 
     const handleLogout =async () => {
-        await axiosInstance.get('/users/logout',{
-            withCredentials: true
-        });
-        setUser(null);
-        navigate('/');
+        try{
+            setLoading(true);
+            localStorage.removeItem('token');
+            setUser(null);
+            await axiosInstance.get('/users/logout',{
+                withCredentials: true
+            });
+            
+            navigate('/');
+        }catch(error){
+            console.log(error);
+        }
+        finally{
+            setLoading(false);
+        }
     };
     if (loading)return  <></>;
     return (
-        <header className="bg-[#091509]  fixed top-0 w-full text-white p-4 flex justify-between items-center">
+        <header className="bg-[#091509] z-50 sticky top-0 w-full text-white p-4 flex justify-between items-center">
             <div className="text-xl text-white font-bold">
                 <Link to="/"><span className='text-transparent bg-clip-text bg-gradient-to-br from-green-300 via-emerald-400 to-green-700'>DEV</span>CHAT</Link>
             </div>

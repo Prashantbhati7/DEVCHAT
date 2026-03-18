@@ -57,10 +57,8 @@ const Home = () => {
                 <div className="absolute bottom-[-20%] right-[-10%] w-[40rem] h-[40rem] bg-emerald-900/10 rounded-full blur-[100px] mix-blend-screen opacity-40" />
             </div>
 
-            {/* Empty Navbar as requested */}
             <div className="relative z-10 container mx-auto px-6 h-20 flex items-center justify-between">
-                <div></div>
-                <div></div>
+                
             </div>
 
             {/* Hero Section */}

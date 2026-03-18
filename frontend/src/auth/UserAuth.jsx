@@ -14,7 +14,10 @@ const UserAuth = ({ children }) => {
                     try{
                         console.log("user is now ",user);
                         const currentUser = await axiosInstance.get('/users/curr-user',{
-                            withCredentials: true
+                            withCredentials: true,
+                            headers:{
+                                Authorization: `Bearer ${localStorage.getItem('token')}`
+                            }
                         })
                         console.log("curr user is ",currentUser);
                         setUser(currentUser.data.user);
@@ -39,7 +42,6 @@ const UserAuth = ({ children }) => {
         else if (!user) {
             const curruser = getCurrentUser();
             if (curruser){
-                setUser(curruser);
                 setLoading(false);
             }else{
                 navigate('/login')

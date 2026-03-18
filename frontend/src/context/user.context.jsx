@@ -36,8 +36,9 @@ export const UserProvider = ({ children }) => {
         setLoading(true);
         try{
             const response = await axios.get('http://localhost:8080/users/curr-user',{
-                withCredentials: true
-            });
+                withCredentials: true , headers:{
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }});
             console.log("user is ",response.data.user);
             setUser(response.data.user);
         }

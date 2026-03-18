@@ -19,8 +19,8 @@ export const createUserController = async (req, res) => {
         delete user._doc.password;
         const options = {
             httpOnly: true,
-            secure : process.env.NODE_ENV !== "development",
-            sameSite: "none",
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
         }
         res.status(201).cookie('token', token, options).json({ user, token });
     } catch (error) {
@@ -57,14 +57,14 @@ export const loginController = async (req, res) => {
 
         const token = await user.generateJWT();
          const options = {
-            httpOnly:true,
-            secure:process.env.NODE_ENV !== "development",
-            sameSite: "none",
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
         }
         console.log("token is ",token);
         delete user._doc.password; // to not send the password in the frontend
 
-        res.status(200).cookie('token', token, options).json({ user, token });
+        res.status(200).cookie('token',token, options).json({ user, token });
 
 
     } catch (err) {

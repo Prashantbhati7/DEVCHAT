@@ -25,7 +25,7 @@ const Register = () => {
             withCredentials: true
         }).then((res) => {
             console.log(res.data)
-            //localStorage.setItem('token', res.data.token)
+            localStorage.setItem('token', res.data.token)
             setUser(res.data.user)
             navigate('/')
         }).catch((err) => {

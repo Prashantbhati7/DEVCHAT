@@ -8,30 +8,37 @@ const MyGD = () => {
     const [ isModalOpen, setIsModalOpen ] = useState(false)
     const [ projectName, setProjectName ] = useState(null)
     const [ project, setProject ] = useState([])
-
+    const [loading,setLoading] = useState(false);
     const navigate = useNavigate()
 
     function createProject(e) {
+        setLoading(true);
         e.preventDefault()
         console.log({ projectName })
 
         axios.post('/projects/create', {
             name: projectName,
-        },{withCredentials:true})
+        },{withCredentials:true,headers:{
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+        }})
             .then((res) => {
                 console.log(res)
                 setProject([...project, res.data])
                 setProjectName(null)
                 setIsModalOpen(false)
+                setLoading(false);
             })
             .catch((error) => {
                 console.log(error)
+                setLoading(false);
             })
     }
 
     useEffect(() => {
         
-        if (user) {axios.get('/projects/all',{withCredentials:true}).then((res) => {
+        if (user) {axios.get('/projects/all',{withCredentials:true,headers:{
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+        }}).then((res) => {
            console.log("all projects are ",res.data.projects);
             setProject(res.data.projects)
         }).catch(err => {
@@ -39,7 +46,7 @@ const MyGD = () => {
         })
         }
     }, [user])
-
+    if(loading) return <div className='min-h-screen flex items-center text-2xl justify-center'> Loading... </div>;
   return (
         <main className='min-h-screen pt-24 pb-12 bg-[#020502] text-zinc-100 flex-1 px-6 font-sans relative'>
             <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden flex items-center justify-center">
