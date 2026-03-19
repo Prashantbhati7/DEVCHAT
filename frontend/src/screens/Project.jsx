@@ -34,7 +34,7 @@ const Project = () => {
     const [ selectedUserId, setSelectedUserId ] = useState(new Set()) // Initialized as Set
     const [ project, setProject ] = useState(location.state.project)
     const [ message, setMessage ] = useState('')
-    const { user } = useContext(UserContext)
+    const { user,setLoading} = useContext(UserContext)
     const messageBox = React.createRef()
 
     const [ users, setUsers ] = useState([])
@@ -50,14 +50,16 @@ const Project = () => {
     const [ runProcess, setRunProcess ] = useState(null)
 
     const handleUserClick = (id) => {             // user selection for adding in group 
+       
         setSelectedUserId(prevSelectedUserId => {
             const newSelectedUserId = new Set(prevSelectedUserId);
             if (newSelectedUserId.has(id)) {
                 newSelectedUserId.delete(id);
+                
             } else {
                 newSelectedUserId.add(id);
+                
             }
-
             return newSelectedUserId;
         });
 
@@ -66,7 +68,7 @@ const Project = () => {
 
  
     function addCollaborators() {             // adding the selected users into the room 
-
+        setLoading(true);
         axios.put("/projects/add-user", {
             projectId: location.state.project._id,
             users: Array.from(selectedUserId)
@@ -77,10 +79,12 @@ const Project = () => {
             setIsModalOpen(false)
             setProject(res.data.project)
             setSelectedUserId(new Set()) // clear selected users
+
         }).catch(err => {
             console.log(err)
+        }).finally(() => {
+            setLoading(false);
         })
-
     }
 
     const send = () => {
@@ -91,7 +95,6 @@ const Project = () => {
         })
         setMessages(prevMessages => [ ...prevMessages, { sender: user, message } ]) // Update messages state
         setMessage("")
-
     }
 
     function WriteAiMessage(message) {
@@ -126,7 +129,7 @@ const Project = () => {
     }
 
     useEffect(() => {
-
+        setLoading(true);
         initializeSocket(project._id)
 
         if (!webContainer) {
@@ -175,10 +178,11 @@ const Project = () => {
             console.log(err)
 
         })
-
+        setLoading(false);
     }, [])
 
     useEffect(() => {
+        setLoading(true)
         try{
         axios.get(`/projects/get-project/${location.state.project._id}`,{withCredentials:true,headers:{
             Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -192,6 +196,8 @@ const Project = () => {
         }catch(err){
             console.log(err)
             
+        }finally{
+            setLoading(false);
         }
     }, [])
 

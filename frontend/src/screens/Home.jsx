@@ -2,6 +2,7 @@ import { motion, useMotionTemplate, useMotionValue } from 'motion/react';
 import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { UserContext } from '../context/user.context';
+import Loading from './Loading';
 
 const FeatureCard = ({ title, desc, icon }) => {
     let mouseX = useMotionValue(0);
@@ -47,8 +48,8 @@ const FeatureCard = ({ title, desc, icon }) => {
 };
 
 const Home = () => {
-    const { user ,loading} = useContext(UserContext);
-    if (loading)  return <div className='bg-black min-h-screen'>Loading...</div>
+    const { user } = useContext(UserContext);
+   // if (loading)  return <Loading/>
     return (
         <div className="min-h-screen bg-[#020502] text-zinc-100 selection:bg-green-500/30 font-sans">
             {/* Ambient Background Glow */}

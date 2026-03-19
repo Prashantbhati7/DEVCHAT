@@ -1,6 +1,7 @@
 
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import axios from '../config/axios';
+import Loading from '../screens/Loading';
 
 
 // Create the UserContext
@@ -47,7 +48,7 @@ export const UserProvider = ({ children }) => {
             setUser(null);
         }
         finally{
-            setLoading(false);
+          setLoading(false);
         }
     }
     useEffect(()=>{
@@ -55,7 +56,7 @@ export const UserProvider = ({ children }) => {
     },[])
     return (
         <UserContext.Provider value={{ user, setUser,loading,setLoading,fetchUser}}>
-            {children}
+            {loading?<Loading/> : children}
         </UserContext.Provider>
     );
 };

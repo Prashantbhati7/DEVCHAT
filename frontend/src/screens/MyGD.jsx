@@ -35,14 +35,16 @@ const MyGD = () => {
     }
 
     useEffect(() => {
-        
+        setLoading(true);
         if (user) {axios.get('/projects/all',{withCredentials:true,headers:{
             Authorization: `Bearer ${localStorage.getItem('token')}`
         }}).then((res) => {
            console.log("all projects are ",res.data.projects);
             setProject(res.data.projects)
+            setLoading(false);
         }).catch(err => {
             console.log(err)
+            setLoading(false);
         })
         }
     }, [user])

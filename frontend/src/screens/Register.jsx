@@ -9,13 +9,13 @@ const Register = () => {
     const [ email, setEmail ] = useState('')
     const [ password, setPassword ] = useState('')
     const [error,seterror] = useState(null);
-    const { setUser } = useContext(UserContext)
+    const { setUser , setLoading } = useContext(UserContext)
     const [scale,setScale] = useState(false);
     const navigate = useNavigate()
 
 
     function submitHandler(e) {
-
+        setLoading(true);
         e.preventDefault()
 
         axios.post('/users/register', {
@@ -31,6 +31,8 @@ const Register = () => {
         }).catch((err) => {
             console.log(err.response.data)
             seterror(err.response.data);
+        }).finally(()=>{
+            setLoading(false);
         })
     }
     const hideerror = async()=>{

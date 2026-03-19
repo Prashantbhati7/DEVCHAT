@@ -10,14 +10,13 @@ const Login = () => {
     const [ email, setEmail ] = useState('')
     const [ password, setPassword ] = useState('')
 
-    const { setUser } = useContext(UserContext)
+    const { setUser,setLoading } = useContext(UserContext)
     const [error,seterror] = useState(null);
     const navigate = useNavigate()
     const [scale,setScale] = useState(false);
     function submitHandler(e) {
-
         e.preventDefault()
-
+        setLoading(true);
         axios.post('/users/login', {
             email,
             password,
@@ -27,10 +26,13 @@ const Login = () => {
            // console.log(res.data)
             localStorage.setItem('token', res.data.token)
             setUser(res.data.user)
+            setLoading(false);
             navigate('/')
         }).catch((err) => {
             console.log(err.response.data)
+            setLoading(false);
             seterror(err.response.data.errors);
+
         })
     }
     const hideerror = async()=>{
