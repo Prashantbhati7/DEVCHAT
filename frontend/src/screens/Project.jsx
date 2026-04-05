@@ -75,7 +75,7 @@ const Project = () => {
         },{withCredentials:true,headers:{
             Authorization: `Bearer ${localStorage.getItem('token')}`
         }}).then(res => {
-            console.log(res.data)
+             
             setIsModalOpen(false)
             setProject(res.data.project)
             setSelectedUserId(new Set()) // clear selected users

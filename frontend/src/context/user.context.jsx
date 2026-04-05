@@ -40,7 +40,7 @@ export const UserProvider = ({ children }) => {
                 withCredentials: true , headers:{
                     Authorization: `Bearer ${localStorage.getItem('token')}`
                 }});
-            console.log("user is ",response.data.user);
+           
             setUser(response.data.user);
         }
         catch(error){

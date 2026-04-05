@@ -186,5 +186,3 @@ http://localhost:5173
 ## 👤 Author
 
 **Prashant Bhati**
-
-
