@@ -16,6 +16,7 @@ const Login = () => {
     const [scale,setScale] = useState(false);
     function submitHandler(e) {
         e.preventDefault()
+        seterror(null); // clear previous error on new attempt
         setLoading(true);
         axios.post('/users/login', {
             email,
@@ -32,23 +33,23 @@ const Login = () => {
             console.log(err.response.data)
             setLoading(false);
             seterror(err.response.data.errors);
-
         })
     }
     const hideerror = async()=>{
-        const promise = new Promise((resolve,reject)=>{
-            setTimeout(()=>{
-                resolve();
-            },2000)
-        })
-        await promise;
-        seterror(null);
-    }
+                const promise = new Promise((resolve,reject)=>{
+                    setTimeout(()=>{
+                        resolve();
+                    },2000)
+                })
+                await promise;
+                seterror(null);
+            }
     useEffect(()=>{
-        if (error){
-            hideerror();
-        }
+            if (error){
+                hideerror();
+            }
     },[error])
+    
 
     return (
         <div className='min-h-screen h-[90vh] bg-black'>
@@ -62,7 +63,12 @@ const Login = () => {
                       
                <form className='px-4 ' onSubmit={submitHandler}>
                     <div className={`mb-4 w-full px-4 flex flex-col  justify-center ${scale && 'scale-y-110 pb-10 '} `}>
-                         <div className="text-red-500 font-semibold mt-2 text-center w-full p-3 h-11 focus:outline-none">{error ? "Error ~ enter valid credentials" : ""}</div>
+                         {error && (
+                             <div className="flex items-center gap-2 text-red-400 font-mono text-sm mt-2 mb-3 px-3 py-2.5 bg-red-500/10 border border-red-500/30 rounded-xl animate-pulse">
+                                 <span className="text-red-500 text-base">✗</span>
+                                 <span>Error ~ {typeof error === 'string' ? error : 'Invalid credentials'}</span>
+                             </div>
+                         )}
                         <label className="block text-white font-mono font-bold w-full  mb-2" htmlFor="email">~Email</label>
                         <input
 

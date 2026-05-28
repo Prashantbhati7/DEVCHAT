@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState, useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { UserContext } from '../context/user.context'
 import axios from '../config/axios'
@@ -15,8 +15,9 @@ const Register = () => {
 
 
     function submitHandler(e) {
-        setLoading(true);
         e.preventDefault()
+        seterror(null); // clear previous error on new attempt
+        setLoading(true);
 
         axios.post('/users/register', {
             email,
@@ -35,20 +36,7 @@ const Register = () => {
             setLoading(false);
         })
     }
-    const hideerror = async()=>{
-            const promise = new Promise((resolve,reject)=>{
-                setTimeout(()=>{
-                    resolve();
-                },2000)
-            })
-            await promise;
-            seterror(null);
-        }
-    useEffect(()=>{
-            if (error){
-                hideerror();
-            }
-    },[error])
+
 
     return (
           <div className='min-h-screen h-[90vh] bg-black'>
@@ -62,7 +50,12 @@ const Register = () => {
                       
                <form className='px-4 ' onSubmit={submitHandler}>
                     <div className={`mb-4 w-full px-4 flex flex-col  justify-center ${scale && 'scale-y-110 pb-10 '} `}>
-                         <div className="text-red-500 font-semibold mt-2 text-center w-full p-3 h-11 focus:outline-none">{error ? "Error ~ User already exists " : ""}</div>
+                         {error && (
+                             <div className="flex items-center gap-2 text-red-400 font-mono text-sm mt-2 mb-3 px-3 py-2.5 bg-red-500/10 border border-red-500/30 rounded-xl animate-pulse">
+                                 <span className="text-red-500 text-base">✗</span>
+                                 <span>Error ~ {typeof error === 'string' ? error : (error.errors?.[0]?.msg || 'Something went wrong')}</span>
+                             </div>
+                         )}
                         <label className="block text-white font-mono font-bold w-full  mb-2" htmlFor="email">~Email</label>
                         <input
 
