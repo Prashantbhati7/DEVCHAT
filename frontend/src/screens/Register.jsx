@@ -30,8 +30,28 @@ const Register = () => {
             setUser(res.data.user)
             navigate('/')
         }).catch((err) => {
-            console.log(err.response.data)
-            seterror(err.response.data);
+            let msg = 'Something went wrong. Please try again.';
+            if (err?.response) {
+                const data = err.response.data;
+                if (typeof data === 'string') {
+                    msg = data;
+                } else if (data && typeof data === 'object') {
+                    if (data.errors) {
+                        if (typeof data.errors === 'string') {
+                            msg = data.errors;
+                        } else if (Array.isArray(data.errors)) {
+                            msg = data.errors.map(e => e.msg).filter(Boolean).join(', ') || 'Validation error';
+                        }
+                    } else if (data.message) {
+                        msg = data.message;
+                    }
+                } else {
+                    msg = err.response.statusText || msg;
+                }
+            } else if (err?.message) {
+                msg = err.message;
+            }
+            seterror(msg);
         }).finally(()=>{
             setLoading(false);
         })
@@ -50,12 +70,12 @@ const Register = () => {
                       
                <form className='px-4 ' onSubmit={submitHandler}>
                     <div className={`mb-4 w-full px-4 flex flex-col  justify-center ${scale && 'scale-y-110 pb-10 '} `}>
-                         {error && (
+                          {error && (
                              <div className="flex items-center gap-2 text-red-400 font-mono text-sm mt-2 mb-3 px-3 py-2.5 bg-red-500/10 border border-red-500/30 rounded-xl animate-pulse">
                                  <span className="text-red-500 text-base">✗</span>
-                                 <span>Error ~ {typeof error === 'string' ? error : (error.errors?.[0]?.msg || 'Something went wrong')}</span>
+                                 <span>Error ~ {error}</span>
                              </div>
-                         )}
+                          )}
                         <label className="block text-white font-mono font-bold w-full  mb-2" htmlFor="email">~Email</label>
                         <input
 

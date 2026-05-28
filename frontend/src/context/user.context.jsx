@@ -10,8 +10,9 @@ export const UserContext = createContext();
 // Create a provider component
 export const UserProvider = ({ children }) => {
 
-    const [ user, setUser ] = useState(null);
-    const [loading,setLoading] = useState(false);
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [initialLoading, setInitialLoading] = useState(true);
     // const fetchUser = async()=>{
     //     const response = await axios.get('http://localhost:8080/users/curr-user',{
     //         withCredentials: true
@@ -47,16 +48,17 @@ export const UserProvider = ({ children }) => {
             console.log(error);
             setUser(null);
         }
-        finally{
-          setLoading(false);
+        finally {
+            setLoading(false);
+            setInitialLoading(false);
         }
     }
-    useEffect(()=>{
+    useEffect(() => {
         fetchUser();
-    },[])
+    }, [])
     return (
-        <UserContext.Provider value={{ user, setUser,loading,setLoading,fetchUser}}>
-            {loading?<Loading/> : children}
+        <UserContext.Provider value={{ user, setUser, loading, setLoading, fetchUser }}>
+            {initialLoading ? <Loading /> : children}
         </UserContext.Provider>
     );
 };
