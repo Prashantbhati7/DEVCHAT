@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useRef } from 'react'
 import { UserContext } from '../context/user.context'
-import {useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import axios from '../config/axios'
 import { initializeSocket, receiveMessage, sendMessage } from '../config/socket'
 import Markdown from 'markdown-to-jsx'
@@ -28,6 +28,13 @@ function SyntaxHighlightedCode(props) {
 const Project = () => {
 
     const location = useLocation()
+    const navigate = useNavigate()
+
+    // Guard: redirect back if navigated directly without project state
+    if (!location.state?.project) {
+        navigate('/', { replace: true })
+        return null
+    }
 
     const [ isSidePanelOpen, setIsSidePanelOpen ] = useState(false)
     const [ isModalOpen, setIsModalOpen ] = useState(false)
@@ -70,7 +77,7 @@ const Project = () => {
     function addCollaborators() {             // adding the selected users into the room 
         setLoading(true);
         axios.put("/projects/add-user", {
-            projectId: location.state.project._id,
+            projectId: project._id,
             users: Array.from(selectedUserId)
         },{withCredentials:true,headers:{
             Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -184,7 +191,7 @@ const Project = () => {
     useEffect(() => {
         setLoading(true)
         try{
-        axios.get(`/projects/get-project/${location.state.project._id}`,{withCredentials:true,headers:{
+        axios.get(`/projects/get-project/${project._id}`,{withCredentials:true,headers:{
             Authorization: `Bearer ${localStorage.getItem('token')}`
         }}).then(res => {
 
