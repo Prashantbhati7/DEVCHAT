@@ -137,3 +137,31 @@ export const getCurrLoggedInUser = async (req, res) => {
         res.status(400).send(err.message);
     }
 }
+
+export const googleAuthController = async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) {
+            return res.status(400).json({ errors: 'Email is required' });
+        }
+
+        let user = await userModel.findOne({ email });
+
+        if (!user) {
+            // User does not exist, create a new one without a password
+            user = await userModel.create({ email });
+        }
+
+        const token = await user.generateJWT();
+        const options = {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
+        }
+
+        res.status(200).cookie('token', token, options).json({ user, token });
+    } catch (error) {
+        console.log(error);
+        res.status(400).send(error.message);
+    }
+}

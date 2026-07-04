@@ -2,6 +2,8 @@ import React, { useState, useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { UserContext } from '../context/user.context'
 import axios from '../config/axios'
+import { auth, googleProvider } from '../config/firebase';
+import { signInWithPopup } from 'firebase/auth';
 
 
 const Register = () => {
@@ -27,6 +29,7 @@ const Register = () => {
         }).then((res) => {
             console.log(res.data)
             localStorage.setItem('token', res.data.token)
+            localStorage.setItem('user', JSON.stringify(res.data.user))
             setUser(res.data.user)
             navigate('/')
         }).catch((err) => {
@@ -55,6 +58,52 @@ const Register = () => {
         }).finally(()=>{
             setLoading(false);
         })
+    }
+
+    function handleGoogleSignIn() {
+        seterror(null);
+        setLoading(true);
+        signInWithPopup(auth, googleProvider)
+            .then((result) => {
+                const user = result.user;
+                axios.post('/users/google-auth', {
+                    email: user.email
+                }, {
+                    withCredentials: true
+                }).then((res) => {
+                    localStorage.setItem('token', res.data.token)
+                    localStorage.setItem('user', JSON.stringify(res.data.user))
+                    setUser(res.data.user)
+                    setLoading(false);
+                    navigate('/')
+                }).catch((err) => {
+                    setLoading(false);
+                    let msg = 'Failed to sync with backend after Google Auth.';
+                    if (err?.response) {
+                        const data = err.response.data;
+                        if (typeof data === 'string') {
+                            msg = data;
+                        } else if (data && typeof data === 'object') {
+                            if (data.errors) {
+                                if (typeof data.errors === 'string') {
+                                    msg = data.errors;
+                                } else if (Array.isArray(data.errors)) {
+                                    msg = data.errors.map(e => e.msg).filter(Boolean).join(', ');
+                                }
+                            } else if (data.message) {
+                                msg = data.message;
+                            }
+                        }
+                    } else if (err?.message) {
+                        msg = err.message;
+                    }
+                    seterror(msg);
+                });
+            })
+            .catch((err) => {
+                setLoading(false);
+                seterror(err.message || 'Google Auth Popup closed or failed.');
+            });
     }
 
 
@@ -96,12 +145,20 @@ const Register = () => {
                             placeholder="Enter your password"
                         />
                     </div>
-                    <div className='w-full flex justify-center'>
+                    <div className='w-full flex flex-col items-center gap-3 justify-center'>
                     <button
                         type="submit"
-                        className="p-3 px-10 rounded-full  bg-green-500 text-black font-bold max-w-3xl mx-auto overflow-hidden shadow-[0_0_30px_rgba(34,197,94,0.3)] hover:shadow-[0_0_50px_rgba(34,197,94,0.5)] transition-all flex items-center justify-center gap-3"
+                        className="p-3 px-10 rounded-full bg-green-500 text-black font-bold max-w-3xl mx-auto overflow-hidden shadow-[0_0_30px_rgba(34,197,94,0.3)] hover:shadow-[0_0_50px_rgba(34,197,94,0.5)] transition-all flex items-center justify-center gap-3"
                     >
                        Register
+                    </button>
+                    <button
+                        type="button"
+                        onClick={handleGoogleSignIn}
+                        className="p-3 px-10 rounded-full border border-green-500/50 hover:bg-green-500/10 text-green-400 font-mono font-bold transition-all flex items-center justify-center gap-3 shadow-[0_0_10px_rgba(34,197,94,0.1)] hover:shadow-[0_0_20px_rgba(34,197,94,0.2)]"
+                    >
+                        <i className="ri-google-fill text-lg"></i>
+                        Sign up with Google
                     </button>
                     </div>
                      <p className="text-gray-400  px-4 mt-4">

@@ -12,6 +12,7 @@
   "dependencies": {
     "@webcontainer/api": "^1.5.1-internal.4",
     "axios": "^1.7.9",
+    "firebase": "^12.15.0",
     "highlight.js": "^11.11.0",
     "ldrs": "^1.1.9",
     "markdown-to-jsx": "^7.7.1",

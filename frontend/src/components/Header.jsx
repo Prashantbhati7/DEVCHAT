@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/user.context.jsx';
+import { auth } from '../config/firebase.js';
 
 import axiosInstance from '../config/axios.js';
 
@@ -8,20 +9,28 @@ const Header = () => {
     const { user, setUser,loading,setLoading} = useContext(UserContext);
     const navigate = useNavigate();
 
-    const handleLogout =async () => {
-        try{
+    const handleLogout = async () => {
+        try {
             setLoading(true);
             localStorage.removeItem('token');
+            localStorage.removeItem('user');
             setUser(null);
+            
+            try {
+                await auth.signOut();
+            } catch (e) {
+                console.log("Firebase signout error:", e);
+            }
+
             await axiosInstance.get('/users/logout',{
                 withCredentials: true
             });
             
-            navigate('/');
-        }catch(error){
+            navigate('/login');
+        } catch (error) {
             console.log(error);
         }
-        finally{
+        finally {
             setLoading(false);
         }
     };

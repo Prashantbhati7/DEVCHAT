@@ -10,55 +10,48 @@ export const UserContext = createContext();
 // Create a provider component
 export const UserProvider = ({ children }) => {
 
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [initialLoading, setInitialLoading] = useState(true);
-    // const fetchUser = async()=>{
-    //     const response = await axios.get('http://localhost:8080/users/curr-user',{
-    //         withCredentials: true
-    //     });
-    //     console.log("user is ",response.data.user);
-    //     setUser(response.data.user);
-    // }
-    // useEffect(()=>{
-    //     setLoading(true);
-    //     try{
-    //         fetchUser();
-    //     }
-    //     catch(error){
-    //         console.log(error);
-    //         setUser(null);
-    //     }
-    //     finally{
-    //         setLoading(false);
-    //     }
-    // },[])
-
-    const fetchUser = async()=>{
-        setLoading(true);
-        try{
-            const response = await axios.get('/users/curr-user',{
-                withCredentials: true , headers:{
-                    Authorization: `Bearer ${localStorage.getItem('token')}`
-                }});
-           
-            setUser(response.data.user);
+    const [user, setUser] = useState(() => {
+        try {
+            const saved = localStorage.getItem('user');
+            return saved ? JSON.parse(saved) : null;
+        } catch {
+            return null;
         }
-        catch(error){
+    });
+    const [loading, setLoading] = useState(false);
+
+    const fetchUser = async () => {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+        setLoading(true);
+        try {
+            const response = await axios.get('/users/curr-user', {
+                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setUser(response.data.user);
+            localStorage.setItem('user', JSON.stringify(response.data.user));
+        }
+        catch (error) {
             console.log(error);
             setUser(null);
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
         }
         finally {
             setLoading(false);
-            setInitialLoading(false);
         }
     }
+
     useEffect(() => {
         fetchUser();
     }, [])
+
     return (
         <UserContext.Provider value={{ user, setUser, loading, setLoading, fetchUser }}>
-            {initialLoading ? <Loading /> : children}
+            {children}
         </UserContext.Provider>
     );
 };

@@ -30,11 +30,7 @@ const Project = () => {
     const location = useLocation()
     const navigate = useNavigate()
 
-    // Guard: redirect back if navigated directly without project state
-    if (!location.state?.project) {
-        navigate('/', { replace: true })
-        return null
-    }
+   
 
     const [ isSidePanelOpen, setIsSidePanelOpen ] = useState(false)
     const [ isModalOpen, setIsModalOpen ] = useState(false)
@@ -55,6 +51,11 @@ const Project = () => {
     const [ iframeUrl, setIframeUrl ] = useState(null)
 
     const [ runProcess, setRunProcess ] = useState(null)
+     // Guard: redirect back if navigated directly without project state
+    if (!location.state?.project) {
+        navigate('/', { replace: true })
+        return null
+    }
 
     const handleUserClick = (id) => {             // user selection for adding in group 
        
