@@ -2,40 +2,149 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  margin: 0%;
-  padding: 0%;
-  box-sizing: border-box;
-}
-
-html,
-body {
-  height: 100%;
-  width: 100%;
-}
-#root{
-  height: 100%;
-  width: 100%;
-}
-.hero{
-
-  background-size: cover;
-  background-repeat: no-repeat;
-   
-  background-position: center;
-  height: 100%;
-  width: 100%;
-}
-.message-box{
-  scroll-behavior: smooth;
-}
-.message-box::-webkit-scrollbar{
-  display: none;
-}
-.projects{
+@layer base {
+  body {
+    @apply bg-dev-bg text-dev-text font-sans antialiased overflow-x-hidden;
+    background-color: #040705;
+  }
   
-  background-repeat: no-repeat;
-  background-size: cover;
-  object-fit: cover;
-  background-position: center;
+  /* Custom scrollbars */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #040705;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #0C160F;
+    border: 1px solid rgba(44, 230, 125, 0.1);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(44, 230, 125, 0.2);
+  }
+}
+
+/* Custom Grid Background */
+.dev-grid-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+  background-color: #040705;
+}
+
+.dev-grid {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(to right, rgba(44, 230, 125, 0.015) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(44, 230, 125, 0.015) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* Sweep Scanline */
+.dev-scanline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(to bottom, transparent, rgba(44, 230, 125, 0.02) 50%, transparent);
+  opacity: 0.6;
+  animation: sweep 12s linear infinite;
+}
+
+@keyframes sweep {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+/* Glowing Network Nodes */
+.dev-glow-node {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background-color: #2CE67D;
+  border-radius: 50%;
+  box-shadow: 0 0 6px #2CE67D, 0 0 12px rgba(44, 230, 125, 0.5);
+  animation: pulse-node 5s ease-in-out infinite;
+}
+
+@keyframes pulse-node {
+  0%, 100% { opacity: 0.05; transform: scale(0.8); }
+  50% { opacity: 0.4; transform: scale(1.3); }
+}
+
+/* Blinking Dots */
+.dev-blink-dot {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background-color: #2CE67D;
+  border-radius: 50%;
+  animation: blink-dot 2.5s infinite;
+}
+
+@keyframes blink-dot {
+  0%, 100% { opacity: 0.02; }
+  50% { opacity: 0.3; }
+}
+
+/* Premium OS Card Style */
+.dev-card {
+  @apply bg-dev-bg-sec border border-emerald-950/40 rounded-xl relative overflow-hidden;
+  transition: border-color 220ms cubic-bezier(0.25, 1, 0.5, 1), background-color 220ms cubic-bezier(0.25, 1, 0.5, 1), box-shadow 220ms cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.dev-card:hover {
+  border-color: rgba(44, 230, 125, 0.25);
+  background-color: #0C160F;
+  box-shadow: 0 0 20px rgba(44, 230, 125, 0.04);
+}
+
+/* Button micro-interactions */
+.btn-os {
+  transition: all 150ms cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.btn-os:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+  box-shadow: 0 0 12px rgba(44, 230, 125, 0.15);
+}
+
+.btn-os:active {
+  transform: scale(0.98);
+}
+
+/* Custom xterm container custom styles */
+.terminal-wrapper .xterm-screen {
+  font-family: 'Geist Mono', monospace !important;
+}
+
+/* Code theme and markdown spacing */
+.prose-dev pre {
+  background: #08110C !important;
+  border: 1px solid rgba(44, 230, 125, 0.08);
+  border-radius: 6px;
+}
+
+.prose-dev code {
+  font-family: 'Geist Mono', monospace;
+  color: #A78BFA;
+}
+
+/* Disable default focus rings and use custom one */
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(44, 230, 125, 0.2);
+  border-color: rgba(44, 230, 125, 0.4) !important;
+}
+
+/* Grid overlay background component helper */
+.ambient-glow {
+  background: radial-gradient(circle 600px at 50% 200px, rgba(44, 230, 125, 0.03), transparent 80%);
 }

@@ -1,38 +1,38 @@
-import React, { useState, useContext } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { UserContext } from '../context/user.context'
-import axios from '../config/axios'
+import React, { useState, useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from '../config/axios';
+import { UserContext } from '../context/user.context';
+import { motion } from 'framer-motion';
 import { auth, googleProvider } from '../config/firebase';
 import { signInWithPopup } from 'firebase/auth';
-
+import BackgroundGrid from '../components/BackgroundGrid';
+import { Terminal, Shield, UserPlus, ArrowRight } from 'lucide-react';
 
 const Register = () => {
-
-    const [ email, setEmail ] = useState('')
-    const [ password, setPassword ] = useState('')
-    const [error,seterror] = useState(null);
-    const { setUser , setLoading } = useContext(UserContext)
-    const [scale,setScale] = useState(false);
-    const navigate = useNavigate()
-
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const { setUser, setLoading } = useContext(UserContext);
+    const [error, setError] = useState(null);
+    const navigate = useNavigate();
+    const [isFullscreen, setIsFullscreen] = useState(false);
 
     function submitHandler(e) {
-        e.preventDefault()
-        seterror(null); // clear previous error on new attempt
+        e.preventDefault();
+        setError(null);
         setLoading(true);
-
         axios.post('/users/register', {
             email,
-            password
-        },{
+            password,
+        }, {
             withCredentials: true
         }).then((res) => {
-            console.log(res.data)
-            localStorage.setItem('token', res.data.token)
-            localStorage.setItem('user', JSON.stringify(res.data.user))
-            setUser(res.data.user)
-            navigate('/')
+            localStorage.setItem('token', res.data.token);
+            localStorage.setItem('user', JSON.stringify(res.data.user));
+            setUser(res.data.user);
+            setLoading(false);
+            navigate('/MyGD');
         }).catch((err) => {
+            setLoading(false);
             let msg = 'Something went wrong. Please try again.';
             if (err?.response) {
                 const data = err.response.data;
@@ -48,20 +48,16 @@ const Register = () => {
                     } else if (data.message) {
                         msg = data.message;
                     }
-                } else {
-                    msg = err.response.statusText || msg;
                 }
             } else if (err?.message) {
                 msg = err.message;
             }
-            seterror(msg);
-        }).finally(()=>{
-            setLoading(false);
-        })
+            setError(msg);
+        });
     }
 
     function handleGoogleSignIn() {
-        seterror(null);
+        setError(null);
         setLoading(true);
         signInWithPopup(auth, googleProvider)
             .then((result) => {
@@ -71,11 +67,11 @@ const Register = () => {
                 }, {
                     withCredentials: true
                 }).then((res) => {
-                    localStorage.setItem('token', res.data.token)
-                    localStorage.setItem('user', JSON.stringify(res.data.user))
-                    setUser(res.data.user)
+                    localStorage.setItem('token', res.data.token);
+                    localStorage.setItem('user', JSON.stringify(res.data.user));
+                    setUser(res.data.user);
                     setLoading(false);
-                    navigate('/')
+                    navigate('/MyGD');
                 }).catch((err) => {
                     setLoading(false);
                     let msg = 'Failed to sync with backend after Google Auth.';
@@ -94,80 +90,143 @@ const Register = () => {
                                 msg = data.message;
                             }
                         }
-                    } else if (err?.message) {
-                        msg = err.message;
                     }
-                    seterror(msg);
+                    setError(msg);
                 });
             })
             .catch((err) => {
                 setLoading(false);
-                seterror(err.message || 'Google Auth Popup closed or failed.');
+                setError(err.message || 'Google Auth Popup closed or failed.');
             });
     }
 
-
     return (
-          <div className='min-h-screen h-[90vh] bg-black'>
-         <div className={`relative top-1/2 translate-y-[-50%] flex flex-col justify-center  mx-auto ${scale?'w-[90%] h-[90%]':'w-[50%] h-[50%]'} bg-[#050c05] border border-green-900/40 rounded-2xl overflow-hidden shadow-2xl shadow-green-900/20 group`}>
-                        <div className="absolute border-b-gray-400 border-b top-0 w-full h-8 bg-black   border-green-900/30 flex items-center px-4 gap-2">
-                           <button onClick={()=> navigate('/')} className="w-3 h-3 rounded-full bg-green-500/20 group-hover:bg-red-500/80 transition-colors"></button>
-                           <div className="w-3 h-3 rounded-full bg-green-500/20 group-hover:bg-yellow-500/80 transition-colors"></div>
-                           <button onClick={()=> setScale(!scale)} className="w-3 h-3 rounded-full bg-green-500/20 group-hover:bg-green-500/80 transition-colors"></button>
-                           <div className="ml-4 text-xs font-mono text-green-700 group-hover:text-green-500 transition-colors">terminal ~ Register </div>
+        <div className="relative min-h-screen flex items-center justify-center bg-dev-bg p-6 overflow-hidden">
+            <BackgroundGrid />
+
+            {/* Glowing Accent Ring */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-dev-green/5 rounded-full blur-[100px] pointer-events-none" />
+
+            <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ type: "spring", stiffness: 320, damping: 28 }}
+                className={`relative w-full ${isFullscreen ? 'max-w-7xl h-[85vh]' : 'max-w-lg'} bg-[#08110C]/90 backdrop-blur-md border border-emerald-950/60 rounded-xl overflow-hidden shadow-2xl transition-all duration-300 z-10`}
+            >
+                {/* OS Window Header */}
+                <div className="flex items-center justify-between px-4 py-3 bg-[#0C160F] border-b border-emerald-950/40">
+                    <div className="flex items-center gap-2">
+                        <button onClick={() => navigate('/')} className="w-3 h-3 rounded-full bg-[#FF5D73]/80 hover:bg-[#FF5D73] transition-colors" />
+                        <div className="w-3 h-3 rounded-full bg-[#FFC857]/80 cursor-default" />
+                        <button onClick={() => setIsFullscreen(!isFullscreen)} className="w-3 h-3 rounded-full bg-[#37E88F]/80 hover:bg-[#37E88F] transition-colors" />
+                    </div>
+                    <div className="flex items-center gap-2 text-xs font-mono text-dev-green/70">
+                        <Terminal size={12} />
+                        <span>devchat@system: ~register</span>
+                    </div>
+                    <div className="w-14" /> {/* Spacer */}
+                </div>
+
+                {/* Form and Content */}
+                <div className="p-8">
+                    <div className="mb-6 font-mono text-xs text-dev-text-sec leading-relaxed">
+                        <p className="text-dev-green">DEVCHAT OS v1.0.0 Registries Initializing.</p>
+                        <p>Loading database sync protocols... [OK]</p>
+                        <p>Awaiting new developer signature handshake...</p>
+                    </div>
+
+                    <h2 className="text-2xl font-black tracking-tight text-dev-text mb-6 font-sans uppercase">
+                        Create New Node
+                    </h2>
+
+                    {error && (
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="flex items-start gap-2.5 text-dev-danger font-mono text-xs mb-6 p-4 bg-dev-danger/10 border border-dev-danger/30 rounded-lg"
+                        >
+                            <span className="font-bold">🚨 [ERR]</span>
+                            <span>{error}</span>
+                        </motion.div>
+                    )}
+
+                    <form onSubmit={submitHandler} className="space-y-5">
+                        <div>
+                            <label className="block text-xs font-mono text-dev-text-sec mb-1.5" htmlFor="email">
+                                devchat:~$ register --email
+                            </label>
+                            <div className="relative">
+                                <span className="absolute left-3 top-3.5 text-dev-green/50 font-mono text-sm">➜</span>
+                                <input
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    type="email"
+                                    id="email"
+                                    required
+                                    className="w-full pl-8 pr-4 py-3 bg-black/60 border border-emerald-950/40 rounded-lg text-dev-green font-mono placeholder-emerald-950 text-sm focus:border-dev-green/40 focus:ring-1 focus:ring-dev-green/20 transition-all"
+                                    placeholder="your_email@domain.com"
+                                />
+                            </div>
                         </div>
-                      
-               <form className='px-4 ' onSubmit={submitHandler}>
-                    <div className={`mb-4 w-full px-4 flex flex-col  justify-center ${scale && 'scale-y-110 pb-10 '} `}>
-                          {error && (
-                             <div className="flex items-center gap-2 text-red-400 font-mono text-sm mt-2 mb-3 px-3 py-2.5 bg-red-500/10 border border-red-500/30 rounded-xl animate-pulse">
-                                 <span className="text-red-500 text-base">✗</span>
-                                 <span>Error ~ {error}</span>
-                             </div>
-                          )}
-                        <label className="block text-white font-mono font-bold w-full  mb-2" htmlFor="email">~Email</label>
-                        <input
 
-                            onChange={(e) => setEmail(e.target.value)}
-                            type="email"
-                            id="email"
-                            className=" w-full mx-auto p-3 bg-black  font-mono focus:border-none focus:outline-none acitve:ring-green-950 placeholder:text-green-700 placeholder:font-mono text-green-700"
-                            placeholder="Enter your email"
-                        />
-                    </div>
-                    <div className={`mb-6 px-4  ${scale && 'scale-y-110 pb-10'} `}>
-                        <label className="block text-white font-mono font-bold  mb-2" htmlFor="password">~Password</label>
-                        <input
-                            onChange={(e) => setPassword(e.target.value)}
-                            type="password"
-                            id="password"
-                            className="w-full p-3 rounded-2xl placeholder:text-green-700 font-mono text-green-700 bg-black   focus:outline-none "
-                            placeholder="Enter your password"
-                        />
-                    </div>
-                    <div className='w-full flex flex-col items-center gap-3 justify-center'>
-                    <button
-                        type="submit"
-                        className="p-3 px-10 rounded-full bg-green-500 text-black font-bold max-w-3xl mx-auto overflow-hidden shadow-[0_0_30px_rgba(34,197,94,0.3)] hover:shadow-[0_0_50px_rgba(34,197,94,0.5)] transition-all flex items-center justify-center gap-3"
-                    >
-                       Register
-                    </button>
-                    <button
-                        type="button"
-                        onClick={handleGoogleSignIn}
-                        className="p-3 px-10 rounded-full border border-green-500/50 hover:bg-green-500/10 text-green-400 font-mono font-bold transition-all flex items-center justify-center gap-3 shadow-[0_0_10px_rgba(34,197,94,0.1)] hover:shadow-[0_0_20px_rgba(34,197,94,0.2)]"
-                    >
-                        <i className="ri-google-fill text-lg"></i>
-                        Sign up with Google
-                    </button>
-                    </div>
-                     <p className="text-gray-400  px-4 mt-4">
-                    Already have an account? <Link to="/login" className="text-green-500 hover:underline">Login</Link>
-                </p>
-                </form>
-        </div>
-        </div>
-    )
-}
+                        <div>
+                            <label className="block text-xs font-mono text-dev-text-sec mb-1.5" htmlFor="password">
+                                devchat:~$ register --password
+                            </label>
+                            <div className="relative">
+                                <span className="absolute left-3 top-3.5 text-dev-green/50 font-mono text-sm">➜</span>
+                                <input
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    type="password"
+                                    id="password"
+                                    required
+                                    className="w-full pl-8 pr-4 py-3 bg-black/60 border border-emerald-950/40 rounded-lg text-dev-green font-mono placeholder-emerald-950 text-sm focus:border-dev-green/40 focus:ring-1 focus:ring-dev-green/20 transition-all"
+                                    placeholder="••••••••"
+                                />
+                            </div>
+                        </div>
 
-export default Register
+                        <div className="pt-2 space-y-3">
+                            <motion.button
+                                whileHover={{ y: -1, filter: 'brightness(1.08)' }}
+                                whileTap={{ scale: 0.98 }}
+                                transition={{ type: "spring", stiffness: 320, damping: 28 }}
+                                type="submit"
+                                className="w-full py-3 bg-dev-green text-[#040705] font-black font-sans tracking-wide uppercase rounded-lg hover:shadow-[0_0_15px_rgba(44,230,125,0.3)] transition-all flex items-center justify-center gap-2 cursor-pointer text-sm"
+                            >
+                                <UserPlus size={16} />
+                                <span>Register Node</span>
+                            </motion.button>
+
+                            <div className="relative flex items-center justify-center my-4">
+                                <div className="absolute inset-0 flex items-center">
+                                    <div className="w-full border-t border-emerald-950/30"></div>
+                                </div>
+                                <span className="relative px-3 bg-[#08110C] text-[10px] font-mono text-dev-text-sec uppercase tracking-widest">
+                                    OR REGISTER WITH
+                                </span>
+                            </div>
+
+                            <motion.button
+                                whileHover={{ y: -1, filter: 'brightness(1.08)' }}
+                                whileTap={{ scale: 0.98 }}
+                                transition={{ type: "spring", stiffness: 320, damping: 28 }}
+                                type="button"
+                                onClick={handleGoogleSignIn}
+                                className="w-full py-3 bg-transparent border border-emerald-950/60 text-dev-green hover:bg-dev-green/5 font-mono text-xs rounded-lg transition-all flex items-center justify-center gap-2 cursor-pointer shadow-[0_0_8px_rgba(44,230,125,0.02)]"
+                            >
+                                <Shield size={14} />
+                                <span>Sign Up via SSO (Google)</span>
+                            </motion.button>
+                        </div>
+                    </form>
+
+                    <p className="text-xs text-dev-text-sec text-center mt-6 font-mono">
+                        Existing entity? <Link to="/login" className="text-dev-green hover:text-dev-green-hover underline">login --session</Link>
+                    </p>
+                </div>
+            </motion.div>
+        </div>
+    );
+};
+
+export default Register;
